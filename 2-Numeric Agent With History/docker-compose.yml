@@ -1,0 +1,34 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongo-server
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongo_data:/data/db 
+
+  mongo-express:
+    image: mongo-express:latest # Web-based MongoDB admin interface
+    container_name: mongo-express-ui
+    restart: always
+    ports:
+      - "8081:8081" # Access UI at http://localhost:8081
+    environment:
+      # Connect to the 'mongodb' service on the Docker network
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017
+      # Use the same admin credentials
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+      # Credentials for the Mongo Express login (can be different from Mongo root)
+      ME_CONFIG_BASICAUTH_USERNAME: me_admin
+      ME_CONFIG_BASICAUTH_PASSWORD: me_admin
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:
